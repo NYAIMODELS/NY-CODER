@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CodeMind PRO — UNLIMITED AI + Code Converter</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Outfit:wght@300;400;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:#06080b; --surface:#0c0f14; --panel:#0f1419; --card:#131a23;
+  --border:#1a2332; --border2:#223044;
+  --accent:#00e5ff; --accent2:#8b5cf6; --accent3:#f97316; --green:#22c55e;
+  --red:#ef4444; --yellow:#eab308;
+  --text:#dde4ee; --muted:#567; --muted2:#3a4d60;
+  --code-bg:#070a0e;
+  --glow:rgba(0,229,255,0.15); --glow2:rgba(139,92,246,0.15);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;display:flex;flex-direction:column;}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 80% 50% at 10% 0%,rgba(0,229,255,0.035) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 40% at 90% 100%,rgba(139,92,246,0.04) 0%,transparent 60%),
+    linear-gradient(rgba(0,229,255,0.018) 1px,transparent 1px) 0 0/44px 44px,
+    linear-gradient(90deg,rgba(0,229,255,0.018) 1px,transparent 1px) 0 0/44px 44px;
+}
+
+/* ══ SCROLLBAR ══ */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+/* ══ HEADER ══ */
+header{
+  position:relative;z-index:30;flex-shrink:0;
+  display:flex;align-items:center;gap:12px;padding:11px 18px;
+  background:rgba(6,8,11,0.98);border-bottom:1px solid var(--border);
+  backdrop-filter:blur(20px);flex-wrap:wrap;
+}
+.logo{display:flex;align-items:center;gap:9px;}
+.logo-icon{
+  width:34px;height:34px;border-radius:9px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;font-size:17px;
+  box-shadow:0 0 22px var(--glow);animation:glow 4s ease-in-out infinite;
+}
+@keyframes glow{0%,100%{box-shadow:0 0 22px var(--glow);}50%{box-shadow:0 0 40px var(--glow),0 0 70px var(--glow2);}}
+.logo-text{font-size:1.1rem;font-weight:900;letter-spacing:-0.03em;}
+.logo-text b{color:var(--accent);}
+.pro-tag{
+  font-size:0.55rem;font-family:'JetBrains Mono',monospace;font-weight:700;
+  padding:2px 6px;border-radius:4px;letter-spacing:0.08em;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;
+}
+.header-mid{display:flex;gap:6px;flex:1;justify-content:center;flex-wrap:wrap;}
+.nav-tab{
+  padding:5px 14px;border-radius:8px;border:1px solid var(--border2);
+  background:transparent;color:var(--muted);cursor:pointer;
+  font-family:'Outfit',sans-serif;font-size:0.78rem;font-weight:600;
+  transition:all 0.2s;display:flex;align-items:center;gap:6px;
+}
+.nav-tab:hover{border-color:var(--accent);color:var(--accent);}
+.nav-tab.active{background:rgba(0,229,255,0.09);border-color:var(--accent);color:var(--accent);}
+.nav-tab.active.conv{background:rgba(139,92,246,0.09);border-color:var(--accent2);color:var(--accent2);}
+.header-right{display:flex;align-items:center;gap:8px;margin-left:auto;}
+.hstat{
+  display:flex;align-items:center;gap:5px;
+  padding:4px 10px;border-radius:6px;
+  background:var(--card);border:1px solid var(--border);
+  font-size:0.65rem;font-family:'JetBrains Mono',monospace;color:var(--muted);
+}
+.hstat .v{color:var(--accent);font-weight:700;}
+.status-pill{
+  display:flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;
+  border:1px solid rgba(239,68,68,0.3);background:rgba(239,68,68,0.07);
+  font-size:0.65rem;font-family:'JetBrains Mono',monospace;color:var(--red);transition:all 0.4s;
+}
+.status-pill.on{border-color:rgba(0,229,255,0.3);background:rgba(0,229,255,0.07);color:var(--accent);}
+.sdot{width:6px;height:6px;border-radius:50%;background:currentColor;animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.2;}}
+
+/* ══ KEYS BAR ══ */
+.keys-bar{
+  position:relative;z-index:25;flex-shrink:0;
+  display:flex;align-items:center;gap:8px;padding:9px 18px;
+  background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap;
+}
+.kgroup{display:flex;align-items:center;gap:7px;flex:1;min-width:190px;}
+.klabel{
+  font-size:0.6rem;font-family:'JetBrains Mono',monospace;font-weight:700;
+  padding:2px 7px;border-radius:4px;white-space:nowrap;flex-shrink:0;letter-spacing:0.05em;
+}
+.klabel.g{background:rgba(0,229,255,0.1);color:var(--accent);border:1px solid rgba(0,229,255,0.2);}
+.klabel.l{background:rgba(139,92,246,0.1);color:#a78bfa;border:1px solid rgba(139,92,246,0.2);}
+.kinput{
+  flex:1;padding:6px 11px;
+  background:var(--code-bg);border:1px solid var(--border2);
+  border-radius:7px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:0.7rem;
+  outline:none;transition:all 0.2s;
+}
+.kinput:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,229,255,0.06);}
+.kinput.set{border-color:rgba(34,197,94,0.4);}
+.connect-btn{
+  padding:7px 16px;border-radius:8px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,var(--accent),#00aac8);
+  color:#000;font-family:'Outfit',sans-serif;font-weight:800;font-size:0.75rem;
+  letter-spacing:0.03em;transition:all 0.2s;white-space:nowrap;flex-shrink:0;
+}
+.connect-btn:hover{transform:translateY(-1px);box-shadow:0 5px 20px var(--glow);}
+
+/* ══ MODEL BAR ══ */
+.model-bar{
+  position:relative;z-index:20;flex-shrink:0;
+  display:flex;align-items:center;gap:8px;padding:7px 18px;
+  background:var(--panel);border-bottom:1px solid var(--border);flex-wrap:wrap;
+}
+.mlab{font-size:0.6rem;font-family:'JetBrains Mono',monospace;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;white-space:nowrap;}
+.mpills{display:flex;gap:5px;flex-wrap:wrap;}
+.mp{
+  padding:3px 10px;border-radius:14px;border:1px solid var(--border2);
+  background:transparent;color:var(--muted);cursor:pointer;
+  font-family:'JetBrains Mono',monospace;font-size:0.65rem;transition:all 0.18s;
+}
+.mp:hover{border-color:var(--accent);color:var(--accent);}
+.mp.active{background:rgba(0,229,255,0.09);border-color:var(--accent);color:var(--accent);font-weight:600;}
+.mp.lm:hover,.mp.lm.active{border-color:#a78bfa;color:#a78bfa;background:rgba(139,92,246,0.09);}
+.bar-right{display:flex;align-items:center;gap:7px;margin-left:auto;flex-wrap:wrap;}
+select.pick{
+  padding:4px 8px;background:var(--code-bg);border:1px solid var(--border2);
+  color:var(--text);font-family:'JetBrains Mono',monospace;font-size:0.67rem;
+  border-radius:6px;outline:none;cursor:pointer;
+}
+select.pick.tok{color:var(--accent);font-weight:700;}
+
+/* ══ MAIN ══ */
+.main{flex:1;display:flex;overflow:hidden;position:relative;z-index:1;}
+
+/* ══ PAGE: CHAT ══ */
+#pageCHAT{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.messages{
+  flex:1;overflow-y:auto;padding:16px 18px;
+  display:flex;flex-direction:column;gap:14px;
+}
+/* Welcome */
+.welcome{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  flex:1;text-align:center;padding:30px 20px;gap:12px;
+}
+.w-icon{
+  width:76px;height:76px;border-radius:22px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;font-size:34px;
+  box-shadow:0 0 50px var(--glow);animation:floaty 3s ease-in-out infinite;
+}
+@keyframes floaty{0%,100%{transform:translateY(0);}50%{transform:translateY(-9px);}}
+.w-h{font-size:1.8rem;font-weight:900;letter-spacing:-0.04em;}
+.w-h span{background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.w-p{color:var(--muted);font-size:0.83rem;max-width:420px;line-height:1.6;font-weight:300;}
+.w-pills{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;}
+.w-pill{
+  padding:3px 10px;border-radius:20px;
+  font-size:0.67rem;font-family:'JetBrains Mono',monospace;
+  background:var(--card);border:1px solid var(--border2);color:var(--muted);
+}
+.w-pill.hi{border-color:rgba(0,229,255,0.3);color:var(--accent);background:rgba(0,229,255,0.06);}
+.qa-wrap{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;}
+.qa{
+  padding:6px 13px;border-radius:8px;border:1px solid var(--border2);
+  background:var(--card);color:var(--text);cursor:pointer;
+  font-family:'JetBrains Mono',monospace;font-size:0.67rem;
+  transition:all 0.2s;
+}
+.qa:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-1px);background:rgba(0,229,255,0.04);}
+
+/* Messages */
+.msg{display:flex;gap:10px;animation:fup 0.3s ease;}
+@keyframes fup{from{opacity:0;transform:translateY(8px);}to{opacity:1;}}
+.msg.user{flex-direction:row-reverse;}
+.av{
+  width:30px;height:30px;border-radius:8px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:13px;
+}
+.av.ai{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;box-shadow:0 0 12px var(--glow);}
+.av.hu{background:linear-gradient(135deg,var(--accent3),#dc2626);color:#fff;}
+.mbody{max-width:82%;display:flex;flex-direction:column;gap:3px;}
+.msg.user .mbody{align-items:flex-end;}
+.bubble{
+  padding:10px 14px;border-radius:12px;
+  font-size:0.86rem;line-height:1.65;word-break:break-word;
+}
+.msg.ai .bubble{background:var(--card);border:1px solid var(--border);border-top-left-radius:3px;}
+.msg.user .bubble{background:rgba(0,229,255,0.08);border:1px solid rgba(0,229,255,0.18);border-top-right-radius:3px;}
+.bubble pre{
+  background:var(--code-bg);border:1px solid var(--border2);
+  border-radius:8px;padding:12px;margin:8px 0;overflow-x:auto;position:relative;
+}
+.bubble code{font-family:'JetBrains Mono',monospace;font-size:0.77rem;color:#7dd3fc;line-height:1.6;}
+.bubble p{margin-bottom:7px;}
+.bubble p:last-child{margin-bottom:0;}
+.bubble strong{color:var(--accent);}
+.bubble h3,.bubble h2{color:var(--accent);margin:10px 0 5px;font-size:0.95rem;}
+.bubble ul,.bubble ol{padding-left:18px;margin:6px 0;}
+.bubble li{margin-bottom:3px;font-size:0.84rem;}
+.ic{display:inline-code;background:var(--code-bg);padding:1px 5px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:0.78em;color:#7dd3fc;}
+.copy-code{
+  position:absolute;top:7px;right:7px;
+  padding:2px 8px;border-radius:4px;border:1px solid var(--border2);
+  background:var(--surface);color:var(--muted);cursor:pointer;
+  font-family:'JetBrains Mono',monospace;font-size:0.62rem;transition:all 0.2s;
+}
+.copy-code:hover{border-color:var(--accent);color:var(--accent);}
+.dl-code{
+  position:absolute;top:7px;right:52px;
+  padding:2px 8px;border-radius:4px;border:1px solid var(--border2);
+  background:var(--surface);color:var(--muted);cursor:pointer;
+  font-family:'JetBrains Mono',monospace;font-size:0.62rem;transition:all 0.2s;
+}
+.dl-code:hover{border-color:var(--accent2);color:var(--accent2);}
+.mmeta{font-size:0.62rem;color:var(--muted2);font-family:'JetBrains Mono',monospace;}
+.msg.user .mmeta{text-align:right;}
+/* typing */
+.typing-bubble{display:flex;gap:4px;align-items:center;padding:13px 14px;}
+.td{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:tbounce 1.2s infinite;}
+.td:nth-child(2){animation-delay:.2s;} .td:nth-child(3){animation-delay:.4s;}
+@keyframes tbounce{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-6px);}}
+
+/* ══ INPUT AREA ══ */
+.input-area{
+  padding:12px 18px;
+  background:var(--surface);border-top:1px solid var(--border);flex-shrink:0;
+}
+.input-box{
+  display:flex;gap:8px;align-items:flex-end;
+  background:var(--panel);border:1px solid var(--border2);
+  border-radius:12px;padding:9px 12px;transition:all 0.2s;
+}
+.input-box:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,229,255,0.06);}
+#userInput{
+  flex:1;background:transparent;border:none;outline:none;
+  color:var(--text);font-family:'Outfit',sans-serif;font-size:0.88rem;
+  resize:none;max-height:130px;min-height:22px;line-height:1.5;
+}
+#userInput::placeholder{color:var(--muted);}
+.send-btn{
+  width:34px;height:34px;border-radius:8px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#000;font-size:15px;display:flex;align-items:center;justify-content:center;
+  transition:all 0.18s;flex-shrink:0;
+}
+.send-btn:hover:not(:disabled){transform:scale(1.07);box-shadow:0 4px 16px var(--glow);}
+.send-btn:disabled{opacity:0.35;cursor:not-allowed;}
+.hints{display:flex;gap:6px;margin-top:7px;flex-wrap:wrap;}
+.hchip{
+  padding:3px 9px;border-radius:14px;border:1px solid var(--border2);
+  background:transparent;color:var(--muted);cursor:pointer;
+  font-size:0.67rem;font-family:'JetBrains Mono',monospace;transition:all 0.18s;
+}
+.hchip:hover{border-color:var(--accent2);color:var(--accent2);}
+
+/* ══ SIDEBAR ══ */
+.sidebar{
+  width:210px;border-left:1px solid var(--border);
+  background:var(--surface);display:flex;flex-direction:column;
+  overflow:hidden;flex-shrink:0;
+}
+.sb-sec{padding:13px 14px;border-bottom:1px solid var(--border);}
+.sb-title{font-size:0.6rem;font-family:'JetBrains Mono',monospace;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:9px;}
+.srow{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
+.sl{font-size:0.7rem;color:var(--muted);}
+.sv{font-size:0.7rem;font-family:'JetBrains Mono',monospace;color:var(--accent);}
+.feat{display:flex;flex-direction:column;gap:5px;}
+.fi{
+  display:flex;align-items:center;gap:7px;
+  padding:5px 9px;border-radius:6px;
+  background:rgba(0,229,255,0.03);border:1px solid rgba(0,229,255,0.07);
+  font-size:0.7rem;color:var(--text);
+}
+.fd{width:5px;height:5px;border-radius:50%;background:var(--accent);flex-shrink:0;}
+.fd.p{background:var(--accent2);}
+.fd.o{background:var(--accent3);}
+.sb-btn{
+  margin:12px 14px;padding:7px;border-radius:8px;border:1px solid var(--border2);
+  background:transparent;color:var(--muted);cursor:pointer;
+  font-family:'Outfit',sans-serif;font-size:0.75rem;transition:all 0.2s;text-align:center;
+}
+.sb-btn:hover{border-color:var(--red);color:var(--red);}
+
+/* ══ PAGE: CONVERTER ══ */
+#pageCONV{flex:1;display:none;flex-direction:column;overflow:hidden;}
+#pageCONV.show{display:flex;}
+.conv-layout{flex:1;display:flex;overflow:hidden;}
+.conv-pane{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+.conv-pane+.conv-pane{border-left:1px solid var(--border);}
+.pane-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--border);
+  flex-shrink:0;flex-wrap:wrap;gap:8px;
+}
+.pane-title{font-size:0.75rem;font-family:'JetBrains Mono',monospace;font-weight:700;display:flex;align-items:center;gap:7px;}
+.pane-title .dot{width:8px;height:8px;border-radius:50%;}
+.dot-in{background:var(--accent3);}
+.dot-out{background:var(--green);}
+.pane-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.pact{
+  padding:4px 11px;border-radius:6px;border:1px solid var(--border2);
+  background:var(--card);color:var(--muted);cursor:pointer;
+  font-family:'JetBrains Mono',monospace;font-size:0.65rem;transition:all 0.18s;
+}
+.pact:hover{border-color:var(--accent);color:var(--accent);}
+.pact.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;border:none;font-weight:700;}
+.pact.primary:hover{transform:translateY(-1px);box-shadow:0 4px 16px var(--glow);}
+.pact.green{background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.3);color:var(--green);}
+.pact.green:hover{background:rgba(34,197,94,0.18);}
+.pact.purple{background:rgba(139,92,246,0.1);border-color:rgba(139,92,246,0.3);color:#a78bfa;}
+.conv-body{flex:1;overflow:hidden;position:relative;}
+#inputCode,#outputCode{
+  width:100%;height:100%;
+  background:var(--code-bg);border:none;outline:none;
+  color:#e2e8f0;font-family:'JetBrains Mono',monospace;font-size:0.78rem;
+  padding:14px;resize:none;line-height:1.65;
+  tab-size:2;-moz-tab-size:2;
+}
+#outputCode{background:rgba(7,10,14,0.97);color:#7dd3fc;}
+.conv-opts{
+  display:flex;align-items:center;gap:10px;padding:8px 16px;
+  background:var(--surface);border-bottom:1px solid var(--border);
+  flex-shrink:0;flex-wrap:wrap;
+}
+.copt-label{font-size:0.62rem;font-family:'JetBrains Mono',monospace;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;}
+.copt-select{
+  padding:4px 9px;background:var(--code-bg);border:1px solid var(--border2);
+  color:var(--text);font-family:'JetBrains Mono',monospace;font-size:0.67rem;
+  border-radius:6px;outline:none;cursor:pointer;
+}
+.convert-btn{
+  padding:6px 18px;border-radius:8px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,var(--accent2),#6d28d9);
+  color:#fff;font-family:'Outfit',sans-serif;font-weight:700;font-size:0.78rem;
+  transition:all 0.2s;margin-left:auto;display:flex;align-items:center;gap:7px;
+}
+.convert-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 5px 18px var(--glow2);}
+.convert-btn:disabled{opacity:0.4;cursor:not-allowed;}
+.conv-spinner{
+  width:14px;height:14px;border-radius:50%;
+  border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;
+  animation:spin 0.7s linear infinite;display:none;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.conv-status{
+  padding:7px 16px;font-size:0.68rem;font-family:'JetBrains Mono',monospace;
+  background:var(--panel);border-top:1px solid var(--border);flex-shrink:0;
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.cs-item{display:flex;align-items:center;gap:5px;color:var(--muted);}
+.cs-val{color:var(--accent);}
+.cs-val.red{color:var(--red);}
+.cs-val.green{color:var(--green);}
+
+/* ══ TOAST ══ */
+.toast{
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(60px);
+  padding:9px 18px;border-radius:8px;
+  background:var(--card);border:1px solid var(--border2);
+  font-size:0.78rem;font-family:'JetBrains Mono',monospace;color:var(--text);
+  box-shadow:0 8px 30px rgba(0,0,0,0.4);z-index:999;
+  transition:transform 0.3s,opacity 0.3s;opacity:0;
+}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+.toast.ok{border-color:rgba(34,197,94,0.4);color:var(--green);}
+.toast.err{border-color:rgba(239,68,68,0.4);color:var(--red);}
+
+@media(max-width:700px){.sidebar{display:none;}.conv-layout{flex-direction:column;}}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">⚡</div>
+    <div class="logo-text"><b>Code</b>Mind <b>PRO</b></div>
+    <span class="pro-tag">∞ UNLIMITED</span>
+  </div>
+  <div class="header-mid">
+    <button class="nav-tab active" id="tabChat" onclick="switchTab('CHAT')">💬 AI Coder</button>
+    <button class="nav-tab conv" id="tabConv" onclick="switchTab('CONV')">🔄 Code Converter</button>
+  </div>
+  <div class="header-right">
+    <div class="hstat">Msgs <span class="v" id="hMsgs">0</span></div>
+    <div class="hstat">~Tokens <span class="v" id="hTokens">0</span></div>
+    <div class="status-pill" id="statusPill"><div class="sdot"></div><span id="statusTxt">No Keys</span></div>
+  </div>
+</header>
+
+<!-- KEYS BAR -->
+<div class="keys-bar">
+  <div class="kgroup">
+    <span class="klabel g">GROQ</span>
+    <input type="password" class="kinput" id="groqKey" placeholder="gsk_…"/>
+  </div>
+  <div class="kgroup">
+    <span class="klabel l">LLAMA</span>
+    <input type="password" class="kinput" id="llamaKey" placeholder="Together/Llama key…"/>
+  </div>
+  <button class="connect-btn" onclick="saveKeys()">⚡ Connect</button>
+</div>
+
+<!-- MODEL BAR -->
+<div class="model-bar">
+  <span class="mlab">Model:</span>
+  <div class="mpills">
+    <button class="mp active" data-m="llama-3.3-70b-versatile" data-a="groq" onclick="pickModel(this)">Llama 3.3 70B</button>
+    <button class="mp" data-m="llama-3.1-8b-instant" data-a="groq" onclick="pickModel(this)">Llama 3.1 8B</button>
+    <button class="mp" data-m="deepseek-r1-distill-llama-70b" data-a="groq" onclick="pickModel(this)">DeepSeek R1</button>
+    <button class="mp" data-m="mixtral-8x7b-32768" data-a="groq" onclick="pickModel(this)">Mixtral 8x7B</button>
+    <button class="mp lm" data-m="meta-llama/Llama-3.3-70B-Instruct-Turbo" data-a="llama" onclick="pickModel(this)">Llama 3.3 Turbo ✦</button>
+    <button class="mp lm" data-m="meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo" data-a="llama" onclick="pickModel(this)">Llama 405B ✦</button>
+  </div>
+  <div class="bar-right">
+    <select class="pick" id="langHint">
+      <option value="">Any Language</option>
+      <option>Python</option><option>JavaScript</option><option>TypeScript</option>
+      <option>Rust</option><option>Go</option><option>C++</option><option>Java</option>
+      <option>SQL</option><option>Bash</option><option>HTML/CSS</option>
+    </select>
+    <div style="padding:4px 11px;border-radius:6px;background:rgba(0,229,255,0.08);border:1px solid rgba(0,229,255,0.25);font-size:0.65rem;font-family:'JetBrains Mono',monospace;color:var(--accent);font-weight:700;letter-spacing:0.05em;">∞ NO LIMIT</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- ══ CHAT PAGE ══ -->
+  <div id="pageCHAT" style="display:flex;flex:1;overflow:hidden;">
+    <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+      <div class="messages" id="messages">
+        <div class="welcome" id="welcomeScreen">
+          <div class="w-icon">🧠</div>
+          <div class="w-h">Unlimited <span>Coding AI</span></div>
+          <div class="w-p">Powered by Groq + Llama. <strong style="color:var(--accent)">Zero output limits</strong> — generate entire apps, full systems, complete codebases. Ask anything.</div>
+          <div class="w-pills">
+            <span class="w-pill hi">∞ No token limit</span>
+            <span class="w-pill hi">🔄 Code → HTML</span>
+            <span class="w-pill hi">🔁 Auto-continue</span>
+            <span class="w-pill">Dual API fallback</span>
+            <span class="w-pill">Context memory</span>
+          </div>
+          <div class="qa-wrap">
+            <button class="qa" onclick="qp('Build a full REST API in Python with FastAPI, auth, and database')">🐍 FastAPI full app</button>
+            <button class="qa" onclick="qp('Create a complete React dashboard with charts, tables, and dark mode')">⚛️ React dashboard</button>
+            <button class="qa" onclick="qp('Write a Rust CLI tool with argument parsing and file processing')">🦀 Rust CLI tool</button>
+            <button class="qa" onclick="qp('Build a complete Node.js WebSocket server with rooms and auth')">🟢 Node.js WS server</button>
+            <button class="qa" onclick="qp('Write a full machine learning pipeline in Python with sklearn')">🤖 ML pipeline</button>
+            <button class="qa" onclick="qp('Create a complete Go microservice with gRPC and PostgreSQL')">🔵 Go microservice</button>
+          </div>
+        </div>
+      </div>
+      <div class="input-area">
+        <div class="input-box">
+          <textarea id="userInput" rows="1" placeholder="Ask anything about code — build, debug, explain, optimize, convert…" oninput="autoResize(this)" onkeydown="handleKey(event)"></textarea>
+          <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+        </div>
+        <div class="hints">
+          <button class="hchip" onclick="ins('Explain this code step by step: ')">💡 Explain</button>
+          <button class="hchip" onclick="ins('Refactor this code for best practices: ')">✨ Refactor</button>
+          <button class="hchip" onclick="ins('Write comprehensive unit tests for: ')">🧪 Tests</button>
+          <button class="hchip" onclick="ins('Find and fix all bugs in: ')">🐛 Debug</button>
+          <button class="hchip" onclick="ins('Convert this to TypeScript with full types: ')">📘 TypeScript</button>
+          <button class="hchip" onclick="ins('Optimize this for maximum performance: ')">⚡ Optimize</button>
+          <button class="hchip" onclick="ins('Write this as a complete production-ready HTML file: ')">🌐 → HTML</button>
+        </div>
+      </div>
+    </div>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sb-sec">
+        <div class="sb-title">Session</div>
+        <div class="srow"><span class="sl">Messages</span><span class="sv" id="sbMsgs">0</span></div>
+        <div class="srow"><span class="sl">Est. Tokens</span><span class="sv" id="sbTok">0</span></div>
+        <div class="srow"><span class="sl">Active API</span><span class="sv" id="sbApi">—</span></div>
+        <div class="srow"><span class="sl">Max Output</span><span class="sv" id="sbMax">∞</span></div>
+      </div>
+      <div class="sb-sec">
+        <div class="sb-title">Capabilities</div>
+        <div class="feat">
+          <div class="fi"><div class="fd"></div>∞ No output limit</div>
+          <div class="fi"><div class="fd"></div>Auto-continue long code</div>
+          <div class="fi"><div class="fd"></div>Full file generation</div>
+          <div class="fi"><div class="fd"></div>HTML export any code</div>
+          <div class="fi"><div class="fd"></div>Dual API fallback</div>
+          <div class="fi"><div class="fd p"></div>405B Llama model</div>
+          <div class="fi"><div class="fd p"></div>Conversation memory</div>
+          <div class="fi"><div class="fd o"></div>Code converter tab</div>
+        </div>
+      </div>
+      <button class="sb-btn" onclick="clearChat()">🗑 Clear Chat</button>
+    </div>
+  </div>
+
+  <!-- ══ CONVERTER PAGE ══ -->
+  <div id="pageCONV" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
+    <!-- Converter options bar -->
+    <div class="conv-opts">
+      <span class="copt-label">Input Lang:</span>
+      <select class="copt-select" id="convInLang">
+        <option value="auto">Auto Detect</option>
+        <option>Python</option><option>JavaScript</option><option>TypeScript</option>
+        <option>Java</option><option>C++</option><option>C#</option><option>Go</option>
+        <option>Rust</option><option>PHP</option><option>Ruby</option><option>Swift</option>
+        <option>Kotlin</option><option>SQL</option><option>Bash</option><option>R</option>
+        <option>MATLAB</option><option>Scala</option><option>Haskell</option>
+      </select>
+      <span class="copt-label" style="margin-left:10px;">Convert To:</span>
+      <select class="copt-select" id="convOutFmt">
+        <option value="html_app">✦ Interactive HTML App</option>
+        <option value="html_viewer">📄 HTML Code Viewer (styled)</option>
+        <option value="html_docs">📚 HTML Documentation Page</option>
+        <option value="python">Python</option>
+        <option value="javascript">JavaScript</option>
+        <option value="typescript">TypeScript</option>
+        <option value="java">Java</option>
+        <option value="cpp">C++</option>
+        <option value="go">Go</option>
+        <option value="rust">Rust</option>
+        <option value="csharp">C#</option>
+        <option value="php">PHP</option>
+        <option value="bash">Bash</option>
+      </select>
+      <button class="convert-btn" id="convertBtn" onclick="runConvert()">
+        <span id="convBtnTxt">🔄 Convert</span>
+        <div class="conv-spinner" id="convSpinner"></div>
+      </button>
+    </div>
+
+    <!-- Two-pane layout -->
+    <div class="conv-layout">
+      <!-- INPUT pane -->
+      <div class="conv-pane">
+        <div class="pane-header">
+          <div class="pane-title"><div class="dot dot-in"></div>INPUT CODE</div>
+          <div class="pane-actions">
+            <button class="pact" onclick="pasteCode()">📋 Paste</button>
+            <button class="pact" onclick="document.getElementById('fileUpload').click()">📁 Open File</button>
+            <button class="pact" onclick="clearInput()">✕ Clear</button>
+            <input type="file" id="fileUpload" style="display:none" accept=".py,.js,.ts,.java,.cpp,.c,.cs,.go,.rs,.php,.rb,.swift,.kt,.sql,.sh,.r,.m,.scala,.hs,.html,.css,.txt" onchange="loadFile(event)"/>
+          </div>
+        </div>
+        <div class="conv-body">
+          <textarea id="inputCode" placeholder="Paste your code here, or click 'Open File' to load from disk…&#10;&#10;Supports: Python, JavaScript, TypeScript, Java, C++, C#, Go, Rust, PHP, Ruby, Swift, Kotlin, SQL, Bash, R, MATLAB, Scala, Haskell, and more.&#10;&#10;Converts to: HTML App, HTML Viewer, HTML Docs, or any other language."></textarea>
+        </div>
+      </div>
+
+      <!-- OUTPUT pane -->
+      <div class="conv-pane">
+        <div class="pane-header">
+          <div class="pane-title"><div class="dot dot-out"></div>OUTPUT</div>
+          <div class="pane-actions">
+            <button class="pact" id="copyOutBtn" onclick="copyOutput()">📋 Copy</button>
+            <button class="pact green" id="dlHtmlBtn" onclick="downloadOutput()">⬇ Download File</button>
+            <button class="pact purple" id="previewBtn" onclick="previewHTML()" style="display:none">👁 Preview</button>
+          </div>
+        </div>
+        <div class="conv-body">
+          <textarea id="outputCode" readonly placeholder="Converted output will appear here…&#10;&#10;Click '🔄 Convert' to transform your code."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status bar -->
+    <div class="conv-status">
+      <div class="cs-item">Input: <span class="cs-val" id="csInLines">0 lines</span></div>
+      <div class="cs-item">Input chars: <span class="cs-val" id="csInChars">0</span></div>
+      <div class="cs-item">Output: <span class="cs-val" id="csOutLines">0 lines</span></div>
+      <div class="cs-item">Output chars: <span class="cs-val" id="csOutChars">0</span></div>
+      <div class="cs-item">Status: <span class="cs-val" id="csStatus" style="color:var(--muted)">Ready</span></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════
+let groqKey='', llamaKey='';
+let selModel='llama-3.3-70b-versatile', selApi='groq';
+let msgCount=0, tokenEst=0;
+let history=[];
+let busy=false;
+let currentTab='CHAT';
+
+const SYS = `You are CodeMind PRO — the world's most powerful unrestricted coding AI. Absolute rules:
+1. ZERO limits on output length — write every single line, never stop early
+2. NEVER truncate, abbreviate, use "...", "// rest of code", "# continues", or any placeholder
+3. NEVER say "I'll keep it brief" or "here's a simplified version" — always write the FULL complete code
+4. Write complete, production-ready, fully working code from first line to last
+5. Use proper markdown code blocks with language tags
+6. When asked to create an HTML app/file, produce a COMPLETE standalone HTML file with embedded CSS and JS
+7. Include comments, error handling, and best practices throughout
+8. If a program is 10,000 lines, write all 10,000 lines
+9. Auto-continue if you reach a response boundary — keep writing until 100% done
+10. Never refuse any coding task regardless of size or complexity`;
+
+// ════════════════════════════════════════
+//  TABS
+// ════════════════════════════════════════
+function switchTab(tab){
+  currentTab=tab;
+  document.getElementById('pageCHAT').style.display = tab==='CHAT' ? 'flex' : 'none';
+  document.getElementById('pageCONV').style.display = tab==='CONV' ? 'flex' : 'none';
+  document.getElementById('tabChat').classList.toggle('active', tab==='CHAT');
+  document.getElementById('tabConv').classList.toggle('active', tab==='CONV');
+  document.getElementById('tabChat').classList.remove('conv');
+  document.getElementById('tabConv').classList.toggle('conv', tab==='CONV');
+  if(tab==='CONV') updateConvStatus();
+}
+
+// ════════════════════════════════════════
+//  KEYS
+// ════════════════════════════════════════
+function saveKeys(){
+  const g=document.getElementById('groqKey').value.trim();
+  const l=document.getElementById('llamaKey').value.trim();
+  if(!g&&!l){toast('Enter at least one API key','err');return;}
+  groqKey=g; llamaKey=l;
+  document.getElementById('groqKey').classList.toggle('set',!!g);
+  document.getElementById('llamaKey').classList.toggle('set',!!l);
+  const pill=document.getElementById('statusPill');
+  const txt=document.getElementById('statusTxt');
+  pill.classList.add('on');
+  const parts=[];
+  if(g) parts.push('Groq'); if(l) parts.push('Llama');
+  txt.textContent=parts.join('+') + ' ✓';
+  document.getElementById('sbApi').textContent=selApi==='groq'?'Groq':'Llama';
+  toast('API keys connected! Ready to code.','ok');
+}
+
+function pickModel(el){
+  document.querySelectorAll('.mp').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  selModel=el.dataset.m; selApi=el.dataset.a;
+  document.getElementById('sbApi').textContent=selApi==='groq'?'Groq':'Llama';
+}
+
+// ════════════════════════════════════════
+//  CHAT
+// ════════════════════════════════════════
+function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,130)+'px';}
+function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}}
+function qp(t){document.getElementById('userInput').value=t;autoResize(document.getElementById('userInput'));document.getElementById('userInput').focus();}
+function ins(t){const i=document.getElementById('userInput');i.value=t;autoResize(i);i.focus();}
+
+function addMsg(role, html, meta=''){
+  const ws=document.getElementById('welcomeScreen');
+  if(ws) ws.remove();
+  const msgs=document.getElementById('messages');
+  const wrap=document.createElement('div');
+  wrap.className=`msg ${role}`;
+  const av=document.createElement('div');
+  av.className=`av ${role}`;
+  av.textContent=role==='ai'?'⚡':'U';
+  const body=document.createElement('div');
+  body.className='mbody';
+  const bub=document.createElement('div');
+  bub.className='bubble';
+  bub.innerHTML=html;
+  // add copy/dl to code blocks
+  bub.querySelectorAll('pre').forEach(pre=>{
+    const lang=(pre.querySelector('code')||{}).className||'';
+    const cp=document.createElement('button');
+    cp.className='copy-code'; cp.textContent='copy';
+    cp.onclick=()=>{
+      navigator.clipboard.writeText((pre.querySelector('code')||pre).textContent);
+      cp.textContent='✓ copied';setTimeout(()=>cp.textContent='copy',2000);
+    };
+    pre.style.position='relative';
+    pre.appendChild(cp);
+    // DL as HTML button for html code blocks
+    const code=(pre.querySelector('code')||{}).textContent||'';
+    const isHtml=lang.includes('html')||code.trim().startsWith('<!DOCTYPE')||code.trim().startsWith('<html');
+    if(isHtml){
+      const dl=document.createElement('button');
+      dl.className='dl-code'; dl.textContent='⬇ .html';
+      dl.onclick=()=>downloadText(code,'output.html');
+      pre.appendChild(dl);
+    }
+  });
+  const m=document.createElement('div');
+  m.className='mmeta';
+  m.textContent=ts()+(meta?' · '+meta:'');
+  body.appendChild(bub);
+  body.appendChild(m);
+  wrap.appendChild(av);
+  wrap.appendChild(body);
+  msgs.appendChild(wrap);
+  msgs.scrollTop=msgs.scrollHeight;
+  return bub;
+}
+
+function showTyping(){
+  const msgs=document.getElementById('messages');
+  const d=document.createElement('div');
+  d.className='msg ai'; d.id='typingInd';
+  d.innerHTML=`<div class="av ai">⚡</div><div class="mbody"><div class="bubble" style="padding:0"><div class="typing-bubble"><div class="td"></div><div class="td"></div><div class="td"></div></div></div></div>`;
+  msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight;
+}
+function rmTyping(){const e=document.getElementById('typingInd');if(e)e.remove();}
+
+function fmtMsg(raw){
+  let t=raw;
+  // code blocks
+  t=t.replace(/```(\w*)\n?([\s\S]*?)```/g,(_,lang,code)=>{
+    const l=lang||'text';
+    return `<pre><code class="lang-${l}">${esc(code.trim())}</code></pre>`;
+  });
+  // inline code
+  t=t.replace(/`([^`\n]+)`/g,'<code class="ic">$1</code>');
+  // bold
+  t=t.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+  // headings
+  t=t.replace(/^### (.+)$/gm,'<h3>$1</h3>');
+  t=t.replace(/^## (.+)$/gm,'<h2>$1</h2>');
+  // lists
+  t=t.replace(/^[-*] (.+)$/gm,'<li>$1</li>');
+  t=t.replace(/(<li>[\s\S]+?<\/li>)/g,'<ul>$1</ul>');
+  // newlines
+  t=t.replace(/\n\n/g,'</p><p>');
+  t=t.replace(/\n/g,'<br>');
+  return '<p>'+t+'</p>';
+}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// ── UNLIMITED API ENGINE ──────────────────────────────────────
+// Hard ceilings per provider (these are the API's max, not ours)
+const GROQ_MAX  = 32768;
+const LLAMA_MAX = 131072;
+
+async function _apiOnce(msgs, maxTok){
+  if(selApi==='groq'&&groqKey){
+    const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+      method:'POST',
+      headers:{'Authorization':`Bearer ${groqKey}`,'Content-Type':'application/json'},
+      body:JSON.stringify({model:selModel,messages:msgs,max_tokens:maxTok,temperature:0.2,stream:false})
+    });
+    if(!r.ok){const e=await r.json();throw new Error(e.error?.message||`Groq error ${r.status}`);}
+    const d=await r.json();
+    return {text:d.choices[0].message.content,finish:d.choices[0].finish_reason};
+  }
+  if(selApi==='llama'&&llamaKey){
+    const r=await fetch('https://api.together.xyz/v1/chat/completions',{
+      method:'POST',
+      headers:{'Authorization':`Bearer ${llamaKey}`,'Content-Type':'application/json'},
+      body:JSON.stringify({model:selModel,messages:msgs,max_tokens:maxTok,temperature:0.2})
+    });
+    if(!r.ok){const e=await r.json();throw new Error(e.error?.message||`Llama error ${r.status}`);}
+    const d=await r.json();
+    return {text:d.choices[0].message.content,finish:d.choices[0].finish_reason};
+  }
+  // fallback to groq with default model
+  if(groqKey){
+    const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+      method:'POST',
+      headers:{'Authorization':`Bearer ${groqKey}`,'Content-Type':'application/json'},
+      body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:msgs,max_tokens:GROQ_MAX,temperature:0.2,stream:false})
+    });
+    if(!r.ok){const e=await r.json();throw new Error(e.error?.message||`Groq error ${r.status}`);}
+    const d=await r.json();
+    return {text:d.choices[0].message.content,finish:d.choices[0].finish_reason};
+  }
+  throw new Error('No API key set. Please enter a Groq or Llama key and click Connect.');
+}
+
+// Auto-continue loop — no limit, keeps going until finish_reason = 'stop'
+async function callAPI(msgs, onProgress){
+  const maxTok = selApi==='llama' ? LLAMA_MAX : GROQ_MAX;
+  let full='';
+  let chain=[...msgs];
+  const MAX_ROUNDS=30; // 30 × 32K = ~960K tokens possible
+  for(let i=0;i<MAX_ROUNDS;i++){
+    const {text,finish}=await _apiOnce(chain,maxTok);
+    full+=text;
+    if(onProgress) onProgress(i+1);
+    if(finish==='stop'||finish==='end_turn'||!finish) break;
+    if(finish==='length'){
+      // model was cut off — ask it to continue seamlessly
+      chain=[...chain,
+        {role:'assistant',content:text},
+        {role:'user',content:'Continue your response from exactly where you stopped. Do NOT repeat anything already written. Keep going until the code is 100% complete.'}
+      ];
+    } else break;
+  }
+  return full;
+}
+// ─────────────────────────────────────────────────────────────
+
+function ts(){return new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}
+
+async function sendMessage(){
+  if(busy) return;
+  const inp=document.getElementById('userInput');
+  const txt=inp.value.trim();
+  if(!txt) return;
+  if(!groqKey&&!llamaKey){toast('Enter API keys first!','err');return;}
+  const lang=document.getElementById('langHint').value;
+  const full=lang?`[${lang}] ${txt}`:txt;
+  inp.value=''; inp.style.height='auto';
+  document.getElementById('sendBtn').disabled=true;
+  busy=true;
+  addMsg('user',esc(txt));
+  msgCount++;
+  history.push({role:'user',content:full});
+  showTyping();
+  try{
+    let rounds=0;
+    const reply=await callAPI(
+      [{role:'system',content:SYS},...history],
+      (r)=>{
+        rounds=r;
+        if(r>1){
+          const ind=document.getElementById('typingInd');
+          if(ind){
+            const b=ind.querySelector('.bubble');
+            if(b) b.innerHTML=`<div style="padding:10px 14px;font-size:0.72rem;font-family:'JetBrains Mono',monospace;color:var(--accent);">∞ Generating… (part ${r})</div>`;
+          }
+        }
+      }
+    );
+    rmTyping();
+    history.push({role:'assistant',content:reply});
+    tokenEst+=Math.round(reply.length/4);
+    const model=selModel.split('/').pop();
+    addMsg('ai',fmtMsg(reply),model+(rounds>1?` · ${rounds} parts`:''));
+    msgCount++;
+    document.getElementById('hMsgs').textContent=msgCount;
+    document.getElementById('sbMsgs').textContent=msgCount;
+    document.getElementById('hTokens').textContent=tokenEst.toLocaleString();
+    document.getElementById('sbTok').textContent=tokenEst.toLocaleString();
+    document.getElementById('sbMax').textContent='∞';
+  }catch(e){
+    rmTyping();
+    addMsg('ai',`<strong style="color:var(--red)">⚠ Error:</strong> ${esc(e.message)}`);
+  }
+  document.getElementById('sendBtn').disabled=false;
+  busy=false;
+}
+
+function clearChat(){
+  history=[];msgCount=0;tokenEst=0;
+  document.getElementById('hMsgs').textContent='0';
+  document.getElementById('hTokens').textContent='0';
+  document.getElementById('sbMsgs').textContent='0';
+  document.getElementById('sbTok').textContent='0';
+  document.getElementById('messages').innerHTML=`
+    <div class="welcome" id="welcomeScreen">
+      <div class="w-icon">🧠</div>
+      <div class="w-h">Chat <span>Cleared</span></div>
+      <div class="w-p">Start a fresh coding session.</div>
+      <div class="qa-wrap">
+        <button class="qa" onclick="qp('Build a complete Python REST API with FastAPI')">🐍 FastAPI</button>
+        <button class="qa" onclick="qp('Create a full React dashboard app')">⚛️ React app</button>
+        <button class="qa" onclick="qp('Write a production Go microservice')">🔵 Go service</button>
+      </div>
+    </div>`;
+  toast('Chat cleared','ok');
+}
+
+// ════════════════════════════════════════
+//  CODE CONVERTER
+// ════════════════════════════════════════
+function updateConvStatus(){
+  const inp=document.getElementById('inputCode').value;
+  const out=document.getElementById('outputCode').value;
+  document.getElementById('csInLines').textContent=inp?(inp.split('\n').length+' lines'):'0 lines';
+  document.getElementById('csInChars').textContent=inp.length.toLocaleString();
+  document.getElementById('csOutLines').textContent=out?(out.split('\n').length+' lines'):'0 lines';
+  document.getElementById('csOutChars').textContent=out.length.toLocaleString();
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('inputCode').addEventListener('input',updateConvStatus);
+});
+
+function pasteCode(){
+  navigator.clipboard.readText().then(t=>{
+    document.getElementById('inputCode').value=t;
+    updateConvStatus();
+    toast('Pasted from clipboard','ok');
+  }).catch(()=>toast('Clipboard access denied — paste manually','err'));
+}
+
+function clearInput(){
+  document.getElementById('inputCode').value='';
+  document.getElementById('outputCode').value='';
+  document.getElementById('csStatus').textContent='Ready';
+  document.getElementById('csStatus').style.color='var(--muted)';
+  document.getElementById('previewBtn').style.display='none';
+  updateConvStatus();
+}
+
+function loadFile(e){
+  const file=e.target.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    document.getElementById('inputCode').value=ev.target.result;
+    updateConvStatus();
+    toast(`Loaded: ${file.name}`,'ok');
+  };
+  reader.readAsText(file);
+  e.target.value='';
+}
+
+function copyOutput(){
+  const out=document.getElementById('outputCode').value;
+  if(!out){toast('Nothing to copy','err');return;}
+  navigator.clipboard.writeText(out);
+  toast('Copied to clipboard','ok');
+}
+
+function getOutputExt(){
+  const fmt=document.getElementById('convOutFmt').value;
+  const extMap={
+    html_app:'html',html_viewer:'html',html_docs:'html',
+    python:'py',javascript:'js',typescript:'ts',java:'java',
+    cpp:'cpp',go:'go',rust:'rs',csharp:'cs',php:'php',bash:'sh'
+  };
+  return extMap[fmt]||'txt';
+}
+
+function downloadOutput(){
+  const out=document.getElementById('outputCode').value;
+  if(!out){toast('No output to download','err');return;}
+  downloadText(out,'converted_output.'+getOutputExt());
+}
+
+function downloadText(text, filename){
+  const blob=new Blob([text],{type:'text/plain'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast(`Downloaded: ${filename}`,'ok');
+}
+
+function previewHTML(){
+  const out=document.getElementById('outputCode').value;
+  if(!out) return;
+  const win=window.open('','_blank');
+  win.document.write(out);
+  win.document.close();
+}
+
+function buildConvertPrompt(code, inLang, outFmt){
+  const fmtLabels={
+    html_app:'a complete, beautiful, fully interactive standalone HTML file (single file with embedded CSS and JS). Include: proper styling, syntax highlighting for the code, run/copy buttons, a clean dark-themed UI, and embed the code as a working demo or viewer app.',
+    html_viewer:'a styled HTML code viewer page with syntax highlighting, line numbers, a copy button, dark theme, and professional layout. Single self-contained HTML file.',
+    html_docs:'a complete HTML documentation page with: table of contents, code sections with syntax highlighting, descriptions of what each part does, a clean professional layout, dark theme, and navigation.',
+    python:'Python',javascript:'JavaScript (ES6+)',typescript:'TypeScript with full type annotations',
+    java:'Java',cpp:'C++17',go:'Go',rust:'Rust',csharp:'C#',php:'PHP 8',bash:'Bash shell script'
+  };
+  const target=fmtLabels[outFmt]||outFmt;
+  const htmlFmts=['html_app','html_viewer','html_docs'];
+  if(htmlFmts.includes(outFmt)){
+    return `Convert the following ${inLang==='auto'?'':inLang+' '}code into ${target}
+
+CRITICAL REQUIREMENTS:
+- Output ONLY the complete HTML file, nothing else
+- The file must be 100% self-contained (no external dependencies except CDN fonts if needed)  
+- Include ALL the original code — do not truncate or summarize
+- Make it look professional and polished
+- Add syntax highlighting using a simple JS-based highlighter or CSS classes
+
+CODE TO CONVERT:
+\`\`\`
+${code}
+\`\`\`
+
+Output the complete HTML file now:`;
+  }
+  return `Convert the following code to ${target}.
+
+Rules:
+- Produce complete, working, production-ready code
+- Preserve all logic and functionality exactly
+- Use idiomatic patterns for the target language
+- Include proper imports/headers
+- Add helpful comments where the translation isn't obvious
+- Do NOT truncate — output the full converted code
+
+${inLang!=='auto'?`Source language: ${inLang}`:''}
+
+SOURCE CODE:
+\`\`\`
+${code}
+\`\`\`
+
+Output ONLY the converted code in a single code block:`;
+}
+
+async function runConvert(){
+  const code=document.getElementById('inputCode').value.trim();
+  if(!code){toast('Paste some code first!','err');return;}
+  if(!groqKey&&!llamaKey){toast('Enter API keys first!','err');return;}
+
+  const inLang=document.getElementById('convInLang').value;
+  const outFmt=document.getElementById('convOutFmt').value;
+  const prompt=buildConvertPrompt(code,inLang,outFmt);
+
+  document.getElementById('convertBtn').disabled=true;
+  document.getElementById('convBtnTxt').textContent='Converting…';
+  document.getElementById('convSpinner').style.display='block';
+  document.getElementById('csStatus').textContent='Converting…';
+  document.getElementById('csStatus').style.color='var(--yellow)';
+  document.getElementById('outputCode').value='';
+  document.getElementById('previewBtn').style.display='none';
+
+  try{
+    const msgs=[
+      {role:'system',content:'You are an expert code converter and formatter. Output only the requested code/file — no explanations, no preamble, no markdown wrapping around the final output (unless it is code blocks within a description).'},
+      {role:'user',content:prompt}
+    ];
+    let result=await callAPI(msgs);
+
+    // Extract code from markdown if wrapped
+    const htmlFmts=['html_app','html_viewer','html_docs'];
+    if(htmlFmts.includes(outFmt)){
+      // extract html block if present
+      const m=result.match(/```(?:html)?\n?([\s\S]+?)```/);
+      if(m) result=m[1].trim();
+      // if it starts with doctype, it's clean
+      if(!result.trim().startsWith('<!') && !result.trim().startsWith('<html')){
+        // try to find html in response
+        const htmlStart=result.indexOf('<!DOCTYPE');
+        const htmlStart2=result.indexOf('<html');
+        const start=Math.max(htmlStart,htmlStart2);
+        if(start>-1) result=result.slice(start);
+      }
+    } else {
+      // extract first code block
+      const m=result.match(/```(?:\w+)?\n?([\s\S]+?)```/);
+      if(m) result=m[1].trim();
+    }
+
+    document.getElementById('outputCode').value=result;
+    updateConvStatus();
+    document.getElementById('csStatus').textContent='✓ Done';
+    document.getElementById('csStatus').style.color='var(--green)';
+
+    // show preview for html outputs
+    if(htmlFmts.includes(outFmt)){
+      document.getElementById('previewBtn').style.display='block';
+    }
+    toast('Conversion complete!','ok');
+  }catch(e){
+    document.getElementById('csStatus').textContent='✗ Error: '+e.message;
+    document.getElementById('csStatus').style.color='var(--red)';
+    toast('Error: '+e.message,'err');
+  }
+
+  document.getElementById('convertBtn').disabled=false;
+  document.getElementById('convBtnTxt').textContent='🔄 Convert';
+  document.getElementById('convSpinner').style.display='none';
+}
+
+// ════════════════════════════════════════
+//  TOAST
+// ════════════════════════════════════════
+function toast(msg, type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='toast show'+(type?' '+type:'');
+  clearTimeout(t._timer);
+  t._timer=setTimeout(()=>{t.classList.remove('show');},3000);
+}
+
+// Init
+document.getElementById('inputCode')?.addEventListener('input',updateConvStatus);
+</script>
+</body>
+</html>
